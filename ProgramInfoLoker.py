@@ -347,35 +347,15 @@ def menu_admin():
             print("Pilihan tidak valid. Silakan coba lagi.")
 
 
-# Fungsi untuk tampilan login
-# def login():
-#     print("Silakan login untuk melanjutkan:")
-#     username_input = input("Username: ")
-#     password_input = input("Password: ")
-
-#     # Verifikasi login dengan memeriksa keberadaan username dan password yang cocok
-#     if (
-#         username_input in user_data
-#         and user_data[username_input]["password"] == password_input
-#     ):
-#         print("Login berhasil!")
-#         job_board()
-#     elif username_input == "admin" and password_input == "12345":
-#         print("Login sebagai admin berhasil")
-#         menu_admin()
-#     else:
-#         print("Username atau password salah. Silakan coba lagi.")
-#         login()
-
-
 # Fungsi untuk tampilan job board
 def job_board():
     while True:
-        print("\n=== Job Board ===")
-        print("1. Job Category")
-        print("2. Search Job")
-        print("3. Filter Job")
-        print("4. Logout")
+        print("\n  === Job Board ===")
+        print(" | 1. Job Category |")
+        print(" | 2. Search Job   |")
+        print(" | 3. Filter Job   |")
+        print(" | 4. Logout       |")
+        print(" ===================")
 
         choice = input("Pilih menu: ")
         if choice == "1":
@@ -633,9 +613,10 @@ def tampilan_awal():
     print("============================================")
     print("|Selamat Datang di Info Lowongan Kerja Jogja|")
     print("============================================")
-    print("1. Sign Up")
-    print("2. Login")
-    print("3. Exit")
+    print("|             1. Sign Up                    |")
+    print("|             2. Login                      |")
+    print("|             3. Exit                       |")
+    print("=============================================")
 
     while True:
         choice = input("Pilih menu: ")
