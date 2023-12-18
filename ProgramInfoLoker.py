@@ -1,5 +1,5 @@
-import re  # Import modul re (Regular Expression) untuk pemrosesan string
 from pprint import pprint
+from tabulate import tabulate
 
 # Inisialisasi list kosong untuk menyimpan data pengguna
 user_data = []
@@ -243,17 +243,34 @@ def login():
 
 
 def add_data(job_data):
+    # Tampilkan kategori pekerjaan
+    print("=== Pilih Kategori Pekerjaan ===")
+    for key, category in job_data.items():
+        if key.isdigit():
+            print(f"{key}. {category['category_name']}")
+    print("0. Back")
     # Input data baru
+
     category_name = input("Masukkan kategori pekerjaan: ")
+
+    # Cek apakah kategori pekerjaan valid
+    if category_name not in job_data:
+        print("Kategori pekerjaan tidak valid,kembali ke menu awal.")
+        back_to_main_menu()
+        return
+    elif category_name == "0":
+      back_to_main_menu()
+
+
     title = input("Masukkan judul pekerjaan: ")
     education = input("Masukkan pendidikan: ")
     gender = input("Masukkan gender: ")
-    age_limit = input("Masukkan batas usia: ")
+    age_limit = int(input("Masukkan batas usia: "))
     employment_status = input("Masukkan status kepegawaian: ")
-    salary = input("Masukkan gaji: ")
+    salary = int(input("Masukkan gaji: "))
     location = input("Masukkan lokasi: ")
     email = input("Masukkan email: ")
-    phone_number = input("Masukkan nomor telepon: ")
+    phone_number = int(input("Masukkan nomor telepon: "))
 
     # Buat dictionary baru
     new_job = {
@@ -269,34 +286,64 @@ def add_data(job_data):
     }
 
     # Tambahkan dictionary baru ke dictionary utama
-    job_data[str(len(job_data) + 1)] = {
-        "category_name": category_name,
-        "jobs": {
-            str(len(job_data[category_name]["jobs"]) + 1): new_job,
-        },
-    }
+    job_data[category_name]["jobs"][str(len(job_data[category_name]["jobs"]) + 1)] = new_job
 
     print("Data berhasil ditambahkan!")
-    pprint(job_data, width=1)
+    pprint(job_data[category_name], width=1)
     back_to_main_menu()
 
-
 def edit_data(job_data):
-    # Input id pekerjaan
+    # Tampilkan kategori pekerjaan
+    print("=== Pilih Kategori Pekerjaan ===")
+    for key, category in job_data.items():
+        if key.isdigit():
+            print(f"{key}. {category['category_name']}")
+    print("0. Back")
+
+    category_choice = input("Pilih kategori pekerjaan (1-5): ")
+    if category_choice == "0":
+        back_to_main_menu()
+
+    # Cek apakah kategori pekerjaan valid
+    category_data = job_data.get(category_choice)
+    if not category_data:
+        print("Kategori tidak valid,kembali ke menu awal.")
+        back_to_main_menu()
+
+    # Tampilkan pekerjaan dalam kategori yang dipilih
+    print(f"\n({category_data['category_name']})")
+    for job_number, job_details in category_data["jobs"].items():
+        print(f"{job_number}. {job_details['title']}")
+
+    # Input id pekerjaan yang ingin diedit
     id_job = input("Masukkan id pekerjaan yang ingin diedit: ")
 
     # Cek apakah id pekerjaan ada
-    if id_job not in job_data:
+    if id_job not in category_data["jobs"]:
         print("Id pekerjaan tidak ada!")
         back_to_main_menu()
-        return
+
+    #list field yang ingin diubah
+    print("╔══════════════════════════════════════╗")
+    print("║ == Pilih field yang ingin diubah ==  ║")
+    print("╠══════════════════════════════════════╣")
+    print("║  title                               ║")
+    print("║  education                           ║")
+    print("║  gender                              ║")
+    print("║  age_Limit                           ║")
+    print("║  employment_status                   ║")
+    print("║  salary                              ║")
+    print("║  location                            ║")
+    print("║  email                               ║")
+    print("║  phone_number                        ║")
+    print("╚══════════════════════════════════════╝")
 
     # Input data yang ingin diedit
     field = input("Masukkan field yang ingin diubah: ")
     value = input("Masukkan nilai baru: ")
 
     # Edit data
-    job_data[id_job][field] = value
+    category_data["jobs"][id_job][field] = value
 
     print("Data berhasil diedit!")
     pprint(job_data, width=1)
@@ -304,22 +351,42 @@ def edit_data(job_data):
 
 
 def delete_data(job_data):
-    # Input id pekerjaan
-    id_job = input("Masukkan id pekerjaan yang ingin dihapus: ")
+    # Tampilkan kategori pekerjaan
+    print("=== Pilih Kategori Pekerjaan ===")
+    for key, category in job_data.items():
+        if key.isdigit():
+            print(f"{key}. {category['category_name']}")
+    print("0. Back")
 
-    # Cek apakah id pekerjaan ada
-    if id_job not in job_data:
-        print("Id pekerjaan tidak ada!")
+    category_choice = input("Pilih kategori pekerjaan (1-5): ")
+    if category_choice == "0":
         back_to_main_menu()
-        return
 
-    # Hapus data
-    del job_data[id_job]
+    # Cek apakah kategori pekerjaan valid
+    category_data = job_data.get(category_choice)
+    if not category_data:
+        print("Kategori tidak valid,kembali ke menu awal.")
+        back_to_main_menu()
+
+    # Tampilkan judul dalam kategori yang dipilih
+    print(f"\n({category_data['category_name']})")
+    for job_number, job_details in category_data["jobs"].items():
+        print(f"{job_number}. {job_details['title']}")
+
+    # Input nomor pekerjaan yang ingin dihapus
+    job_number_choice = input("Pilih nomor pekerjaan yang ingin dihapus: ")
+
+    # Cek apakah nomor pekerjaan ada
+    if job_number_choice not in category_data["jobs"]:
+        print("Nomor pekerjaan tidak valid!")
+        back_to_main_menu()
+
+    # Hapus data pekerjaan
+    del category_data["jobs"][job_number_choice]
 
     print("Data berhasil dihapus!")
     pprint(job_data, width=1)
     back_to_main_menu()
-
 
 def back_to_main_menu():
     input("Tekan Enter untuk kembali ke Main Menu...")
@@ -327,11 +394,15 @@ def back_to_main_menu():
 
 def menu_admin():
     while True:
-        print("\n=== Menu Admin ===")
-        print("1. Create Data")
-        print("2. Edit Data")
-        print("3. Delete Data")
-        print("4. Exit")
+        print("╔════════════════════════════════╗")
+        print("║        🌟 Menu Admin 🌟       ║")
+        print("╠════════════════════════════════╣")
+        print("║ 1. Create Data                 ║")
+        print("║ 2. Edit Data                   ║")
+        print("║ 3. Delete Data                 ║")
+        print("║ 4. Exit                        ║")
+        print("╚════════════════════════════════╝")
+
 
         choice = input("Pilih menu: ")
         if choice == "1":
@@ -345,17 +416,39 @@ def menu_admin():
             tampilan_awal()
         else:
             print("Pilihan tidak valid. Silakan coba lagi.")
+# Fungsi untuk tampilan login
+# def login():
+#     print("Silakan login untuk melanjutkan:")
+#     username_input = input("Username: ")
+#     password_input = input("Password: ")
+
+#     # Verifikasi login dengan memeriksa keberadaan username dan password yang cocok
+#     if (
+#         username_input in user_data
+#         and user_data[username_input]["password"] == password_input
+#     ):
+#         print("Login berhasil!")
+#         job_board()
+#     elif username_input == "admin" and password_input == "12345":
+#         print("Login sebagai admin berhasil")
+#         menu_admin()
+#     else:
+#         print("Username atau password salah. Silakan coba lagi.")
+#         login()
 
 
 # Fungsi untuk tampilan job board
 def job_board():
     while True:
-        print("\n  === Job Board ===")
-        print(" | 1. Job Category |")
-        print(" | 2. Search Job   |")
-        print(" | 3. Filter Job   |")
-        print(" | 4. Logout       |")
-        print(" ===================")
+        menu_data = [
+            ["1", "Job Category"],
+            ["2", "Search Job"],
+            ["3", "Filter Job"],
+            ["4", "Logout"],
+        ]
+
+        print(tabulate(menu_data, headers=["Nomor", "Menu"], tablefmt="fancy_grid"))
+
 
         choice = input("Pilih menu: ")
         if choice == "1":
@@ -374,13 +467,16 @@ def job_board():
 
 # Fungsi untuk tampilan job category
 def show_job_categories():
-    print("\n === Job Category ===")
-    print("1. Kesehatan")
-    print("2. Pendidikan")
-    print("3. Restaurant")
-    print("4. Teknologi Informasi")
-    print("5. Media & Hiburan")
-    print("0. Back")
+    category_data = [
+        ["1", "Kesehatan"],
+        ["2", "Pendidikan"],
+        ["3", "Restaurant"],
+        ["4", "Teknologi Informasi"],
+        ["5", "Media & Hiburan"],
+        ["0", "Back"],
+    ]
+
+    print(tabulate(category_data, headers=["Nomor", "Kategori Pekerjaan"], tablefmt="fancy_grid"))
 
     category_choice = input("Pilih kategori pekerjaan (1-5): ")
     if category_choice == "0":
@@ -414,11 +510,12 @@ def search_job():
                     )
 
     if found_jobs:
-        print("\n=== Hasil Pencarian ===")
-        for index, job in enumerate(found_jobs, start=1):
-            print(
-                f"{index}. {job['title']} - {job['category_name']} - {job['location']} - {job['education']}"
-            )
+        search_results_data = [
+            [str(index), job['title'], job['category_name'], job['location'], job['education']]
+            for index, job in enumerate(found_jobs, start=1)
+        ]
+
+        print(tabulate(search_results_data, headers=["Nomor", "Judul Pekerjaan", "Kategori", "Lokasi", "Pendidikan"], tablefmt="fancy_grid"))
         print("0. Back")
 
         # Meminta pengguna untuk memilih nomor pekerjaan yang ingin dilihat persyaratannya
@@ -439,10 +536,28 @@ def search_job():
             show_job_requirements(selected_job["category"], selected_job["job_number"])
         else:
             print("Nomor pekerjaan tidak valid.")
-            job_board()
+            # Meminta pengguna untuk kembali ke menu sebelumnya
+            back_option = input("0. Back\nPilih menu: ")
+            if back_option == "0":
+                job_board()
+            else:
+                print("Pilihan tidak valid. Kembali ke menu sebelumnya.")
+                job_board()
     else:
         print("Tidak ada pekerjaan yang sesuai dengan kata kunci.")
-        job_board()
+        # Meminta pengguna untuk kembali ke menu sebelumnya
+        back_option = input("0. Back\nPilih menu: ")
+        if back_option == "0":
+            job_board()
+        else:
+            print("Pilihan tidak valid. Kembali ke menu sebelumnya.")
+            # Meminta pengguna untuk kembali ke menu sebelumnya
+            back_option = input("0. Back\nPilih menu: ")
+            if back_option == "0":
+                job_board()
+            else:
+                print("Pilihan tidak valid. Kembali ke menu sebelumnya.")
+                job_board()
 
 
 def filter_job():
@@ -525,11 +640,13 @@ def filter_job():
                     )
 
     if filtered_jobs:
-        print("\n=== Hasil Penyaringan ===")
-        for index, job in enumerate(filtered_jobs, start=1):
-            print(
-                f"{index}. {job['title']} - {job['category_name']} - {job['location']} - {job['education']}"
-            )
+        filtered_results_data = [
+            [str(index), job['title'], job['category_name'], job['location'], job['education']]
+            for index, job in enumerate(filtered_jobs, start=1)
+        ]
+
+        print(tabulate(filtered_results_data, headers=["Nomor", "Judul Pekerjaan", "Kategori", "Lokasi", "Pendidikan"], tablefmt="fancy_grid"))
+
 
         # Meminta pengguna untuk memilih nomor pekerjaan yang ingin dilihat persyaratannya
         selected_job_number = input("Pilih nomor pekerjaan: ")
@@ -550,7 +667,13 @@ def filter_job():
             job_board()
     else:
         print("Tidak ada pekerjaan yang sesuai dengan kriteria.")
-        job_board()
+        # Meminta pengguna untuk kembali ke menu sebelumnya
+        back_option = input("0. Back\nPilih menu: ")
+        if back_option == "0":
+            job_board()
+        else:
+            print("Pilihan tidak valid. Kembali ke menu sebelumnya.")
+            job_board()
 
 
 # Fungsi untuk menampilkan persyaratan pekerjaan tertentu
@@ -563,15 +686,19 @@ def show_job_requirements(category, job_number):
     if category_data:
         job_details = category_data["jobs"].get(job_number)
         if job_details:
+            requirements_data = [
+                ["Tingkat Pendidikan", job_details["education"]],
+                ["Gender", job_details["gender"]],
+                ["Umur", job_details["age_limit"]],
+                ["Status Kerja", job_details["employment_status"]],
+                ["Besaran Gaji", job_details["salary"]],
+                ["Lokasi Kerja", job_details["location"]],
+                ["Email", job_details["email"]],
+                ["No. Telp", job_details["no_telp"]],
+            ]
+
             print(f"\nPersyaratan untuk {job_details['title']}:")
-            print(f"- Tingkat Pendidikan: {job_details['education']}")
-            print(f"- Gender: {job_details['gender']}")
-            print(f"- Umur: {job_details['age_limit']}")
-            print(f"- Status Kerja: {job_details['employment_status']}")
-            print(f"- Besaran Gaji: {job_details['salary']}")
-            print(f"- Lokasi Kerja: {job_details['location']}")
-            print(f"- Email: {job_details['email']}")
-            print(f"- No. Telp: {job_details['no_telp']}")
+            print(tabulate(requirements_data, headers=["Kriteria", "Nilai"], tablefmt="fancy_grid"))
 
             # Memeriksa apakah kandidat memenuhi syarat
             if (
@@ -585,6 +712,14 @@ def show_job_requirements(category, job_number):
                 print("Anda memenuhi syarat pekerjaan!")
             else:
                 print("Maaf, Anda tidak memenuhi syarat pekerjaan.")
+
+            # Meminta pengguna untuk kembali ke menu sebelumnya
+            back_option = input("0. Back\nPilih menu: ")
+            if back_option == "0":
+                job_board()
+            else:
+                print("Pilihan tidak valid. Kembali ke menu sebelumnya.")
+                job_board()
         else:
             print("Nomor pekerjaan tidak valid.")
     else:
@@ -596,9 +731,12 @@ def show_jobs_by_category(category):
     category_data = job_data.get(category)
 
     if category_data:
-        print(f"\n({category_data['category_name']})")
-        for job_number, job_details in category_data["jobs"].items():
-            print(f"{job_number}. {job_details['title']}")
+        jobs_data = [
+            [str(job_number), job_details['title']]
+            for job_number, job_details in category_data["jobs"].items()
+        ]
+
+        print(tabulate(jobs_data, headers=["Nomor", "Judul Pekerjaan"], tablefmt="fancy_grid"))
         print("0. Back")
         job_number_choice = input("Pilih nomor pekerjaan: ")
         if job_number_choice == "0":
@@ -610,13 +748,14 @@ def show_jobs_by_category(category):
 
 
 def tampilan_awal():
-    print("============================================")
-    print("|Selamat Datang di Info Lowongan Kerja Jogja|")
-    print("============================================")
-    print("|             1. Sign Up                    |")
-    print("|             2. Login                      |")
-    print("|             3. Exit                       |")
-    print("=============================================")
+    header = ["Selamat Datang di Info Lowongan Kerja Jogja"]
+    menu = [
+        ["1", "Sign Up"],
+        ["2", "Login"],
+        ["3", "Exit"],
+    ]
+
+    print(tabulate(menu, headers=header, tablefmt="fancy_grid"))
 
     while True:
         choice = input("Pilih menu: ")
